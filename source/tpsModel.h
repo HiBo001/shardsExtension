@@ -1,19 +1,18 @@
-#ifndef TPSMODEL      // ← 移到最顶部
-#define TPSMODEL
+#ifndef TPSMODEL_H      // ← 移到最顶部
+#define TPSMODEL_H
 
 #include <map>
 #include "common.h"
-#include "tpsModel.cpp"
+#include "shardsExtension.h"
 
 using namespace std;
 
 class SShard;
 class shardsExtension;
 
-class throughput_model{
+class tpsModel{
 
     public:
-
         vector<string> loadLines;
 
         int internalTxLoad = 1;
@@ -22,19 +21,19 @@ class throughput_model{
         double order_capacity = 5000;
         double process_capacity = 8000;
 
-        double total_Throughput = 0; // 系统整体吞吐
+        double estimatedTps = 0; // 系统整体吞吐
         double average_Latency = 0; // 系统平均交易延迟
 
-        map<int, shardsExtension> shards;
+        map<int, SimulationShard> shards;
         vector<cross_shard_workload> cross_shard_workloads; // 所有的跨片负载
         map<string, map<string, int>> cross_traffic;
 
     public:
 
         // 构造函数
-        throughput_model(){};
+        tpsModel(){};
 
-        throughput_model(vector<string> topologyLines);
+        tpsModel(vector<string> topologyLines);
 
         // 解析一行字符串中的所有数字，并返回一个整数向量
         vector<int> parseLine(const string& line);
@@ -49,22 +48,22 @@ class throughput_model{
         void printTopology();
 
         // 解析负载信息
-        void parseLoad();
+        void parseLoad(vector<string> loadLines);
 
         // 解析扁平架构下的负载信息
         void parseFlatenLoad(const vector<string>& loadLines);
 
         // 计算非叶子分片能够处理的交易数量
-        int calculateNonLeafTxCount(SShard& shard);
+        int calculateNonLeafTxCount(SimulationShard& shard);
 
         // 计算叶子分片的吞吐量
-        int calculateLeafThroughput(SShard& shard, map<double, double> availableTxs);
+        int calculateLeafThroughput(SimulationShard& shard, map<double, double> availableTxs);
 
         // 计算交易平均延时
-        double calculate_average_latency();
+        // double calculate_average_latency();
 
         // // 计算系统整体吞吐
-        double calculate_total_tps();
+        double calculatePerformanceScore();
 
         // 解析交易数据并填充 trafficMatrix
         void parseTrafficData(const std::vector<std::string>& transactions);

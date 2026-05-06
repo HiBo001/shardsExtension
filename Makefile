@@ -6,31 +6,33 @@ LDFLAGS = -pthread
 # Directory settings
 SOURCE_DIR = source
 BUILD_DIR = build
+# 调整：bin 和 obj 现在平级，都在 build 下
+BIN_DIR = $(BUILD_DIR)/bin
+OBJ_DIR = $(BUILD_DIR)/obj
 
-# Source files (指定在 source 目录下)
+# Source files
 SRCS = $(SOURCE_DIR)/main.cpp $(SOURCE_DIR)/common.cpp $(SOURCE_DIR)/shardsExtension.cpp $(SOURCE_DIR)/tpsModel.cpp
 
-# Object files (从 source/xxx.cpp 映射为 build/xxx.o)
-# notdir 去掉路径前缀，再用 addprefix 加上 build/
-OBJS = $(addprefix $(BUILD_DIR)/, $(notdir $(SRCS:.cpp=.o)))
+# Object files (映射到 build/obj/)
+OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
-# Output executable
-EXEC = $(BUILD_DIR)/shardsExtension
+# Output executable (映射到 build/bin/)
+EXEC = $(BIN_DIR)/shardsExtension
 
 # Default target
-all: $(BUILD_DIR) $(EXEC)
+all: $(EXEC)
 
-# Create the build directory
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+# 确保目录存在的规则
+# 使用一行命令创建两个目录
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
 
-# Link the object files into the final executable
-$(EXEC): $(OBJS)
+# 链接规则：依赖于 OBJS，且确保 BIN_DIR 存在
+$(EXEC): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(OBJS) $(LDFLAGS) -o $(EXEC)
 
-# Rule for compiling .cpp files into .o object files
-# 使用 vpath 让 Make 知道去 source 目录找源文件
-$(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(SOURCE_DIR)/common.h | $(BUILD_DIR)
+# 编译规则：从 source/ 编译到 build/obj/，确保 OBJ_DIR 存在
+$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(SOURCE_DIR)/common.h | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean rule

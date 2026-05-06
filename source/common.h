@@ -11,20 +11,29 @@
 #include <algorithm>
 #include <vector>
 #include <regex>
-// #include "shardsExtension.h"
 
 using namespace std;
 
-// // 定义模拟分片结构体
-// struct SimulationShard {
-//     int id;                    // 分片ID
-//     double process_capacity;   // 处理综合交易处理能力
-//     double order_capacity;        // 交易排序能力
-//     double internalTxCount;       // 片内交易数量
-//     double crossShardTxCount;     // 跨片交易数量
-//     vector<int> children;      // 孩子分片ID
-//     int parent = -1;           // 父节点ID，默认值为 -1 表示无父节点
-// };
+// 定义模拟分片结构体
+struct SimulationShard {
+    int id;                    // 分片ID
+    double process_capacity;   // 处理综合交易处理能力
+    double order_capacity;        // 交易排序能力
+    double internalTxCount;       // 片内交易数量
+    double crossShardTxCount;     // 跨片交易数量
+    vector<int> children;      // 孩子分片ID
+    int parent = -1;           // 父节点ID，默认值为 -1 表示无父节点
+
+    SimulationShard() = default;  // 使用默认值
+
+    // 添加构造函数
+    SimulationShard(int _id, double _process, double _order, 
+                    double _internal, double _cross, 
+                    vector<int> _children, int _parent = -1)
+        : id(_id), process_capacity(_process), order_capacity(_order),
+          internalTxCount(_internal), crossShardTxCount(_cross),
+          children(_children), parent(_parent) {}
+};
 
 struct topology_with_tps {
     double throughput; // 相应的吞吐

@@ -3,7 +3,7 @@
 // shardsExtension::shardsExtension(vector<string> topologyLines, vector<string>& _loadLines){
 //     parseLoad(_loadLines); // 解析负载
 
-//     tm = make_shared<throughput_model>(); // 初始化 throughput_model
+//     tm = make_shared<tpsModel>(); // 初始化 tpsModel
 //     tm->loadLines = _loadLines;
 
 //     tm->parseTopology(topologyLines); // 解析分片的拓扑结构
